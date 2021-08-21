@@ -1,1 +1,29 @@
-// TODO
+.headerContainer{
+  width: 100%;
+  height: 150px;
+  padding: 80px 830px 0 372px;
+
+  div{
+    width: 240px;
+    height: 26px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    img{
+      width:40px;
+      height:23px;
+    }
+
+    h2{
+      font-size:24px;
+
+      strong{
+        color:var(--highlight)
+      }
+    }
+  }
+
+}
