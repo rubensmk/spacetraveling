@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { ptBR } from 'date-fns/locale';
 import { format } from 'date-fns';
+import Link from 'next/link';
 import Header from '../../components/Header';
 
 import { getPrismicClient } from '../../services/prismic';
@@ -40,11 +41,12 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({ post, preview }: PostProps): JSX.Element {
   const totalWords = post?.data.content.reduce((total, contentItem) => {
-    total += contentItem.heading.split(' ').length;
+    total += contentItem.heading?.split(' ').length;
 
     const words = contentItem.body.map(item => item.text.split(' ').length);
 
@@ -112,6 +114,14 @@ export default function Post({ post }: PostProps): JSX.Element {
             })}
           </div>
         </section>
+
+        {preview && (
+          <aside>
+            <Link href="/api/exit-preview">
+              <a className={commonStyles.preview}>Sair do modo Preview</a>
+            </Link>
+          </aside>
+        )}
       </main>
     </>
   );
@@ -137,10 +147,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const { slug } = params;
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('posts', String(slug), {});
+  const response = await prismic.getByUID('posts', String(slug), {
+    ref: previewData?.ref || null,
+  });
 
   const post = {
     uid: response.uid,
@@ -164,6 +180,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return {
     props: {
       post,
+      preview,
     },
   };
 };
